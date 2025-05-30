@@ -1,50 +1,78 @@
-# Welcome to your Expo app 👋
+SafeWatch App
+Project Overview
+The SafeWatch App is a mobile application designed to provide a secure and curated environment for children to access online video content, primarily from YouTube. In an age where digital content consumption by children is prevalent, SafeWatch aims to give parents and guardians control over what their children can view, ensuring access only to pre-approved and vetted YouTube URLs.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This initial version focuses on the administrative backend functionality: allowing approved users to securely add and categorize YouTube links that will later be accessible to children.
 
-## Get started
+Current Features
+Secure URL Submission: Parents/administrators can securely add YouTube video URLs through a user-friendly interface.
+Tagging System: Each URL can be associated with relevant tags (e.g., "educational," "animals," "cartoons") for easy categorization and future filtering.
+Cloud Storage with Firestore: All approved URLs and their associated tags are stored securely in a dedicated Firebase Firestore database.
+Technologies Used
+React Native (with Expo): For cross-platform mobile application development.
+Firebase Firestore: A NoSQL cloud database used for storing approved YouTube URLs and their metadata.
+Getting Started (For Developers)
+To set up and run the SafeWatch App locally:
 
-1. Install dependencies
+Clone the repository:
+git clone https://github.com/SreeMenon27/Safe-watch-app.git
+cd Safe-watch-app
 
-   ```bash
-   npm install
-   ```
+Install dependencies:
+npm install
+Set up Firebase Configuration:
+Create a firebaseConfig.js file at the root of your project.
+Populate it with your Firebase project's web configuration details:
+JavaScript
 
-2. Start the app
+// firebaseConfig.js
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
 
-   ```bash
-   npx expo start
-   ```
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
 
-In the output, you'll find options to open the app in a
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+export { db };
+Configure Firestore Security Rules:
+In your Firebase Console, navigate to Firestore Database -> Rules.
+Temporarily set the following rules for development (to allow read and write to approved_urls):
+Code snippet
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /approved_urls/{document=**} {
+      allow read, write: if true;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+Remember to adjust these for production security!
+Start the app:
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+npx expo start --clear
+Scan the QR code with your Expo Go app on your mobile device.
+Usage (Adding Content)
+Once the app is running:
 
-## Get a fresh project
+Enter a YouTube URL in the provided input field.
+Enter relevant tags, separated by commas (e.g., education, science, fun).
+Tap the "Add URL to SafeWatch" button.
+The URL and tags will be saved to your Firebase Firestore database. You can verify this in the "Data" tab of your Firestore Console.
+Next Steps & Future Enhancements
+The immediate next steps for this project involve:
 
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Displaying Approved URLs: Creating a user interface to fetch and display the stored URLs in a scrollable list.
+Clickable URLs: Enabling children to click on a displayed URL and open it directly in a web browser or YouTube app.
+Search and Filter: Implementing functionality to search and filter URLs by tags or keywords.
+User Authentication: Implementing secure user authentication (parents/children) to control access to different app sections.
